@@ -59,6 +59,7 @@ $(".list-group").on("click", "p", function() {
   textInput.trigger("focus");
 });
 
+// having issues inside here***********************
 $(".list-group").on("blur", "textarea", function() {
   // get the textarea's current value/text
   var text = $(this)
@@ -75,8 +76,8 @@ $(".list-group").on("blur", "textarea", function() {
   var index = $(this)
   .closest(".list-group-item")
   .index();
-
-  tasks[status][index].text = text;
+  var currentTaskText = tasks[status][index].text
+  currentTaskText = text;
   saveTasks();
 
   // recreate p element
