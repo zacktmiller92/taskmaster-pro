@@ -1,19 +1,25 @@
 var tasks = {};
 
 
+var auditTask = function(taskEl) {
+  // to ensure element is getting to the function
+  console.log(taskEl);
+};
+
+
 var createTask = function(taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
-  var taskSpan = $("<span>")
-    .addClass("badge badge-primary badge-pill")
-    .text(taskDate);
-  var taskP = $("<p>")
-    .addClass("m-1")
-    .text(taskText);
+
+  var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(taskDate);
+
+  var taskP = $("<p>").addClass("m-1").text(taskText);
 
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  // check due date
+  auditTask(taskLi);
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
@@ -59,7 +65,7 @@ $(".list-group").on("click", "p", function() {
   textInput.trigger("focus");
 });
 
-// having issues inside here***********************
+
 $(".list-group").on("blur", "textarea", function() {
   // get the textarea's current value/text
   var text = $(this)
@@ -76,8 +82,7 @@ $(".list-group").on("blur", "textarea", function() {
   var index = $(this)
   .closest(".list-group-item")
   .index();
-  var currentTaskText = tasks[status][index].text
-  currentTaskText = text;
+  tasks[status][index].text = text;
   saveTasks();
 
   // recreate p element
@@ -105,12 +110,21 @@ $(".list-group").on("click", "span", function() {
   // swap out elements
   $(this).replaceWith(dateInput);
 
+  // enable jquery ui datepicker
+  dateInput.datepicker({
+    minDate: 1,
+    onClose: function() {
+      // when calendar is closed, force a "change" event on the `dateInput`
+      $(this).trigger("change");
+    }
+  });
+
   // automatically focus on new element
   dateInput.trigger("focus");
 });
 
 // value of due date was changed
-$(".list-group").on("blur", "input[type='text']", function() {
+$(".list-group").on("change", "input[type='text']", function() {
   // get current text
   var date = $(this)
     .val()
@@ -182,7 +196,7 @@ $(".card .list-group").sortable({
   }
 });
 
-
+// delete tasks moved to traash
 $("#trash").droppable({
   accept: ".card .list-group-item",
   tolerance: "touch",
@@ -196,6 +210,11 @@ $("#trash").droppable({
   out: function(event, ui) {
     console.log("out");
   }
+});
+
+// datepicker on modal 
+$("#modalDueDate").datepicker({
+  minDate: 1
 });
 
 // modal was triggered
